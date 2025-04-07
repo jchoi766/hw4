@@ -246,28 +246,34 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* p, AVLNode<Key, Value>*
 			if (g->getBalance() == -2 ) { 
 				if (g->getLeft() == p && p->getLeft() == n) {
 					// zig zig 
-					rotateRight(p);
+					//rotateRight(p);
+					rotateRight(g);
 					p->setBalance(0);
 					g->setBalance(0);
 				} else {
 					// zig zag 
 					doubleCall = true;
-					rotateLeft(n);
-					rotateRight(n);
+					//rotateLeft(n);
+					//rotateRight(n);
+					rotateLeft(p);
+					rotateRight(g);
 				}
 			}
 		} else { // isRight  
 			if (g->getBalance() == 2) { 
 				if (g->getRight() == p && p->getRight() == n) {
 					// zag zag 
-					rotateLeft(p);
+					//rotateLeft(p);
+					rotateLeft(g);
 					p->setBalance(0);
 					g->setBalance(0);
 				} else {
 					// zag zig 
 					doubleCall = true;
-					rotateRight(n);
-					rotateLeft(n);
+					//rotateRight(n);
+					//rotateLeft(n);
+					rotateRight(p);
+					rotateLeft(g);
 				}
 			}
 		}
@@ -291,6 +297,8 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* p, AVLNode<Key, Value>*
 	}
 
 }
+
+/*
 template <class Key, class Value>
 void AVLTree<Key, Value>::rotateRight(AVLNode<Key, Value>* p) {
 	//std::cout <<"rotate right" <<std::endl;
@@ -318,7 +326,8 @@ void AVLTree<Key, Value>::rotateRight(AVLNode<Key, Value>* p) {
 		gg->setRight(p);
 	} 
 }
-
+*/
+/*
 template <class Key, class Value>
 void AVLTree<Key, Value>::rotateLeft(AVLNode<Key, Value>* p) {
 	//std::cout <<"rotate left" <<std::endl;
@@ -350,6 +359,72 @@ void AVLTree<Key, Value>::rotateLeft(AVLNode<Key, Value>* p) {
 
 }
 
+*/ 
+
+
+template <class Key, class Value>
+void AVLTree<Key, Value>::rotateRight(AVLNode<Key, Value>* g) {
+	//std::cout <<"rotate right" <<std::endl;
+	//AVLNode<Key, Value>* g = p->getParent();
+	if (g == NULL || g->getLeft() == NULL) return;
+
+	AVLNode<Key, Value>* p = g->getLeft();
+	AVLNode<Key, Value>* rChild = p->getRight();
+
+	
+	// rotating 
+	p->setRight(g);
+	g->setLeft(rChild);	
+	if (rChild != NULL){
+		rChild->setParent(g);
+	}
+
+	// update parents 
+	AVLNode<Key, Value>* gg = g->getParent();
+	p->setParent(gg);
+	g->setParent(p);	
+
+	if (gg == NULL) { // g is root 
+		BinarySearchTree<Key, Value>::root_ = p;
+	} else if (gg->getLeft() == g) {
+		gg->setLeft(p);
+	} else if (gg->getRight() == g) {
+		gg->setRight(p);
+	} 
+}
+
+template <class Key, class Value>
+void AVLTree<Key, Value>::rotateLeft(AVLNode<Key, Value>* g) {
+	//std::cout <<"rotate left" <<std::endl;
+
+	//AVLNode<Key, Value>* g = p->getParent();
+	if (g == NULL ||g ->getRight() == NULL) return;
+
+	AVLNode<Key, Value>* p = g->getRight();
+	AVLNode<Key, Value>* lChild = p->getLeft();
+	
+	// rotating 
+	p->setLeft(g);
+	g->setRight(lChild);	
+	if (lChild != NULL){
+		lChild->setParent(g);
+	}
+
+	// set parents 
+	AVLNode<Key, Value>* gg = g->getParent();
+
+	p->setParent(gg);	
+	g->setParent(p);
+
+	if (gg == NULL) { // g is root 
+		BinarySearchTree<Key, Value>::root_ = p;
+	} else if (gg->getLeft() == g) {
+		gg->setLeft(p);
+	} else if (gg->getRight() == g) {
+		gg->setRight(p);
+	} 
+
+}
 /*
  * Recall: The writeup specifies that if a node has 2 children you
  * should swap with the predecessor and then remove.
@@ -370,7 +445,7 @@ void AVLTree<Key, Value>::remove(const Key& key)
 		}
 		
 		AVLNode<Key, Value>* p = toDelete->getParent(); 
-		int diff;
+		int diff ;
 		if (p != NULL) {
 			// toDelete is left child 
 			if (p->getLeft() == toDelete) {
@@ -467,16 +542,19 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* n, int diff)
 		// case 1 
 		if (diff == -1) { // n is left child
 			AVLNode<Key, Value>* c = n->getLeft();
+			if (c == NULL) return;
 			// case 1a  - zig zig 
 			if (c->getBalance() == -1) {
-				rotateRight(c);
+				// old version of rotateRight - rotateRight(c); 
+				rotateRight(n);
 				n->setBalance(0);
 				c->setBalance(0);
 				removeFix(p, nDiff);
 			}
 			// case 1b  - zig zig 
 			else if (c->getBalance() == 0) {
-				rotateRight(c);
+				//rotateRight(c);
+				rotateRight(n);
 				n->setBalance(-1);
 				c->setBalance(1);
 				return;
@@ -484,8 +562,10 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* n, int diff)
 			// case 1c - zig zag 
 			else if (c->getBalance() == 1) {
 				AVLNode<Key, Value>* g = c->getRight();
-				rotateLeft(g);
-				rotateRight(c);
+				//rotateLeft(g);
+				//rotateRight(c);
+				rotateLeft(c);
+				rotateRight(n);
 				
 				if (g->getBalance() == 1){
 					n->setBalance(0);
@@ -504,16 +584,19 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* n, int diff)
 			}
 		} else if (diff == 1) { // n is right child 
 			AVLNode<Key, Value>* c = n->getRight();
+			if (c == NULL) return;
 			// case 1a  - zag zag 
 			if (c->getBalance() == 1) {
-				rotateLeft(c);
+				//rotateLeft(c);
+				rotateLeft(n);
 				n->setBalance(0);
 				c->setBalance(0);
 				removeFix(p, nDiff);
 			} 
 			// case 1b  - zag zag  
 			else if (c->getBalance() == 0) {
-				rotateLeft(c);
+				///rotateLeft(c);
+				rotateLeft(n);
 				n->setBalance(1);
 				c->setBalance(-1);
 				return;
@@ -521,8 +604,10 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* n, int diff)
 			// case 1c - zag zig  
 			else if (c->getBalance() == -1) {
 				AVLNode<Key, Value>* g = c->getLeft();
-				rotateRight(g); 
-				rotateLeft(c);
+				//rotateRight(g); 
+				//rotateLeft(c);
+				rotateRight(c); 
+				rotateLeft(n);
 
 				if (g->getBalance() == -1){
 					n->setBalance(0);
@@ -541,6 +626,7 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* n, int diff)
 			}
 		}
 	}
+
 }
 
 template<class Key, class Value>
