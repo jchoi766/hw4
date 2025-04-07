@@ -361,12 +361,14 @@ void AVLTree<Key, Value>::remove(const Key& key)
 	AVLNode<Key, Value>* toDelete = static_cast<AVLNode<Key, Value>*>(BinarySearchTree<Key, Value>::internalFind(key));
 	if (toDelete != NULL) {
 		
+		//comment this chunck out 
+		
 		/*if (toDelete->getRight() != NULL && toDelete->getLeft() != NULL) {
 			// 2 children exist. swap toDelete w its predecessor 
 			AVLNode<Key, Value>* pred = static_cast<AVLNode<Key, Value>*>(BinarySearchTree<Key, Value>::predecessor(toDelete)); //find predecessor 
 			AVLTree<Key, Value>::nodeSwap(toDelete, pred);
-		}
-		*/
+		}*/
+		
 
 		AVLNode<Key, Value>* p = toDelete->getParent(); 
 		int diff;
@@ -377,7 +379,15 @@ void AVLTree<Key, Value>::remove(const Key& key)
 			} else {
 				diff = -1;
 			}
-		}
+		} /*
+		else {
+			//head is being deleted, determine if balances are disrupted 
+			if (toDelete->getLeft() != NULL) {
+				diff = -1;
+			} else if (toDelete->getRight() != NULL) {
+				diff = 1;
+			}
+		} */
 		BinarySearchTree<Key, Value>::remove(key);
 		removeFix(p, diff);
 	}
