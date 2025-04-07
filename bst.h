@@ -490,7 +490,7 @@ Value const & BinarySearchTree<Key, Value>::operator[](const Key& key) const
 template<class Key, class Value>
 void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &keyValuePair)
 {
-	// TODO / DONE?
+	// TODO / DONE
 	root_ = insertHelper(root_, keyValuePair);
 }
 
@@ -547,7 +547,6 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
 				root_ = NULL;
 			} else {
 				//update parent pointer 
-				
 				if (toDelete->getParent()->getRight() == toDelete) {
 					// toDelete's a right child 
 					toDelete->getParent()->setRight(NULL);
@@ -555,7 +554,6 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
 					// toDelete's a left child 
 					toDelete->getParent()->setLeft(NULL);
 				}
-				
 			}
 			delete toDelete;
 		} else {
@@ -573,7 +571,6 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
 					} else parent->setLeft(rChild);
 					rChild->setParent(parent);
 				}
-				
 			} else if (toDelete->getLeft() != NULL){
 				// only left child exists
 				Node<Key, Value>* lChild = toDelete->getLeft();
@@ -582,14 +579,11 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
 					lChild->setParent(NULL);
 				} else {
 					Node<Key, Value>* parent = toDelete->getParent();
-
 					if (parent->getRight() == toDelete) {
 						//todelete is a right child of parent 
 						parent->setRight(lChild);
 					} else parent->setLeft(lChild);
 					lChild->setParent(parent);
-
-	
 				}
 			}
 			delete toDelete;
