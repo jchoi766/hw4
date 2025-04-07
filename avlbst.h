@@ -369,7 +369,6 @@ void AVLTree<Key, Value>::remove(const Key& key)
 			AVLTree<Key, Value>::nodeSwap(toDelete, pred);
 		}
 		
-
 		AVLNode<Key, Value>* p = toDelete->getParent(); 
 		int diff;
 		if (p != NULL) {
@@ -380,6 +379,7 @@ void AVLTree<Key, Value>::remove(const Key& key)
 				diff = -1;
 			}
 		} 
+		/*
 		else {
 			//head is being deleted, determine if balances are disrupted 
 			if (toDelete->getLeft() != NULL) {
@@ -388,7 +388,59 @@ void AVLTree<Key, Value>::remove(const Key& key)
 				diff = 1;
 			}
 		} 
-		BinarySearchTree<Key, Value>::remove(key);
+		*/
+
+		// delete n 
+
+		// leaf node, just delete the node
+		if ((toDelete->getRight() == NULL) && (toDelete->getLeft() == NULL)) {
+			// check if head pointer 
+			if (toDelete == BinarySearchTree<Key, Value>::root_) {
+				BinarySearchTree<Key, Value>::root_ = NULL;
+			} else {
+				//update parent pointer 
+				if (toDelete->getParent()->getRight() == toDelete) {
+					// toDelete's a right child 
+					toDelete->getParent()->setRight(NULL);
+				} else {
+					// toDelete's a left child 
+					toDelete->getParent()->setLeft(NULL);
+				}
+			}
+			delete toDelete;
+		} else {
+			if (toDelete->getRight() != NULL) {
+				// only right child exists
+				Node<Key, Value>* rChild = toDelete->getRight();
+				if (toDelete == BinarySearchTree<Key, Value>::root_) {
+					BinarySearchTree<Key, Value>::root_= rChild;
+					rChild->setParent(NULL);
+				} else {
+					Node<Key, Value>* parent = toDelete->getParent();
+					if (parent->getRight() == toDelete) {
+						//todelete is a right child of parent 
+						parent->setRight(rChild);
+					} else parent->setLeft(rChild);
+					rChild->setParent(parent);
+				}
+			} else if (toDelete->getLeft() != NULL){
+				// only left child exists
+				Node<Key, Value>* lChild = toDelete->getLeft();
+				if (toDelete == BinarySearchTree<Key, Value>::root_) {
+					BinarySearchTree<Key, Value>::root_ = lChild;
+					lChild->setParent(NULL);
+				} else {
+					Node<Key, Value>* parent = toDelete->getParent();
+					if (parent->getRight() == toDelete) {
+						//todelete is a right child of parent 
+						parent->setRight(lChild);
+					} else parent->setLeft(lChild);
+					lChild->setParent(parent);
+				}
+			}
+			delete toDelete;
+		}
+		//BinarySearchTree<Key, Value>::remove(key);
 		removeFix(p, diff);
 	}
 }
